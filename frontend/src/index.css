@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+:root {
+  --artisan-brown: #a0522d;
+  --artisan-dark: #8b3e1c;
+  --artisan-beige: #f8f4f0;
+  --artisan-offwhite: #fdfcfb;
+  --artisan-white: #ffffff;
+  --artisan-gray: #333333;
+  --artisan-gray-light: #ccc;
+  --artisan-gray-lighter: #ddd;
+  --artisan-gray-soft: #f4f4f4;
+}
+
