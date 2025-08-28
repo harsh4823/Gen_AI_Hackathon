@@ -1,6 +1,7 @@
 package com.example.backend.Controller;
 
 import com.example.backend.Model.Artisan;
+import com.example.backend.Payload.UserInfoResponse;
 import com.example.backend.Repository.ArtisanRepository;
 import com.example.backend.Security.JWT.JWTUtils;
 import com.example.backend.Security.OTP.DTO.JWTResponse;
@@ -14,7 +15,8 @@ import com.example.backend.Security.OTP.SMSService;
 import com.example.backend.Security.Services.UserDetailServiceImp;
 import com.example.backend.Security.Services.UserDetailsImp;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -57,14 +59,18 @@ public class AuthController {
         UserDetailsImp userDetails = (UserDetailsImp) authenticated.getPrincipal();
         Artisan artisan = userDetails.getArtisan();
         if (artisan.getUserName()==null){
-            String tempToken = jwtUtils.generateTokenFromUsername(userDetails);
+            ResponseCookie cookie = jwtUtils.generateJwtCookie(userDetails);
+            String tempToken = cookie.getValue();
             Map<String,String> response = Map.of(
                 "message","OTP Verified Successfully. Please update your username",
                  "temporaryToken",tempToken);
-            return new ResponseEntity<>(response,HttpStatus.CREATED);
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).
+                    body(response);
         }
-        String jwt = jwtUtils.generateTokenFromUsername(userDetails);
-        return new ResponseEntity<>(new JWTResponse(userDetails.getUsername(),jwt), HttpStatus.OK);
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        String jwtToken = jwtCookie.getValue();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString()).
+                body(new JWTResponse(userDetails.getUsername(),jwtToken));
     }
 
     @PutMapping("/profile/username")
@@ -78,7 +84,38 @@ public class AuthController {
         artisan.setUserName(userNameRequest.getUsername());
         artisanRepository.save(artisan);
         UserDetails updatedUserDetails = UserDetailsImp.build(artisan,userDetails.getUsername());
-        String finalJWT = jwtUtils.generateTokenFromUsername(updatedUserDetails);
-        return ResponseEntity.ok(new JWTResponse(updatedUserDetails.getUsername(),finalJWT));
+        ResponseCookie finalCookie = jwtUtils.generateJwtCookie(updatedUserDetails);
+        String finalJWT = finalCookie.getValue();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,finalCookie.toString()).
+                body(new JWTResponse(updatedUserDetails.getUsername(),finalJWT));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(){
+        ResponseCookie cookie = jwtUtils.cleanCookie();
+        return ResponseEntity.ok().header(
+                HttpHeaders.SET_COOKIE,cookie.toString())
+                .body(Map.of("message","Logged out Successfully"));
+    }
+
+    @GetMapping("/profile/info")
+    public ResponseEntity<?> getUserInfo(Authentication authentication){
+        UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
+        Artisan artisan = userDetails.getArtisan();
+        UserInfoResponse response = new UserInfoResponse(artisan.getUserName(),artisan.getEmail(),artisan.getPhoneNo());
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PutMapping("/profile/update")
+    public ResponseEntity<?> updateProfile(@RequestBody UserInfoResponse request,Authentication authentication){
+        UserInfoResponse userInfoResponse = userDetailServiceImp.updateProfile(request,authentication);
+        return ResponseEntity.ok().body(userInfoResponse);
+    }
+
+    @DeleteMapping("/delete-account")
+    public ResponseEntity<?> deleteAccount(Authentication authentication){
+        UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
+        UserInfoResponse response = userDetailServiceImp.deleteArtisan(userDetails);
+        return ResponseEntity.ok().body(response);
     }
 }

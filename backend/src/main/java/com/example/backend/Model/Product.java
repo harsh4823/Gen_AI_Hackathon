@@ -24,8 +24,6 @@ public class Product {
     @Column(length = 4000)
     private String description;
 
-    private String category;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_url")
@@ -51,4 +49,6 @@ public class Product {
 
     @ManyToOne
     private Artisan artisan;
+
+    private String productStory;
 }

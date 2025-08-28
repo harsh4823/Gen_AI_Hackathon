@@ -14,6 +14,5 @@ public class ProductDraftResponse {
     private String status;
     private List<String> images;
     private String suggestedProductName;
-    private String suggestedCategory;
     private String suggestedPrice;
 }

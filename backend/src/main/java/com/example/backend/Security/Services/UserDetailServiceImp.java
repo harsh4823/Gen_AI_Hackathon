@@ -1,8 +1,10 @@
 package com.example.backend.Security.Services;
 
 import com.example.backend.Model.Artisan;
+import com.example.backend.Payload.UserInfoResponse;
 import com.example.backend.Repository.ArtisanRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -39,5 +41,21 @@ public class UserDetailServiceImp implements UserDetailsService {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         Pattern pattern = Pattern.compile(emailRegex);
         return pattern.matcher(identifier).matches();
+    }
+
+    public UserInfoResponse updateProfile(UserInfoResponse request, Authentication authentication) {
+        com.example.backend.Security.Services.UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
+        Artisan artisan = userDetails.getArtisan();
+        artisan.setUserName(request.getUsername());
+        artisan.setEmail(request.getEmail());
+        artisan.setPhoneNo(request.getPhoneNumber());
+        artisanRepository.save(artisan);
+        return new UserInfoResponse(artisan.getUserName(),artisan.getEmail(),artisan.getPhoneNo());
+    }
+
+    public UserInfoResponse deleteArtisan(UserDetailsImp userDetails) {
+        Artisan artisan = userDetails.getArtisan();
+        artisanRepository.delete(artisan);
+        return new UserInfoResponse(artisan.getUserName(),artisan.getEmail(),artisan.getPhoneNo());
     }
 }
