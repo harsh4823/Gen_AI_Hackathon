@@ -10,7 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Long> {
-    Page<Product> findByArtisanID(Long artisanId);
-
     Page<Product> findByArtisan(Artisan currentArtisan, Pageable pageable);
 }

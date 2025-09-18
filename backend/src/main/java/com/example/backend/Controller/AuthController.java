@@ -1,6 +1,7 @@
 package com.example.backend.Controller;
 
 import com.example.backend.Model.Artisan;
+import com.example.backend.Payload.ArtisanDTO;
 import com.example.backend.Payload.UserInfoResponse;
 import com.example.backend.Repository.ArtisanRepository;
 import com.example.backend.Security.JWT.JWTUtils;
@@ -14,6 +15,7 @@ import com.example.backend.Security.OTP.OTPService;
 import com.example.backend.Security.OTP.SMSService;
 import com.example.backend.Security.Services.UserDetailServiceImp;
 import com.example.backend.Security.Services.UserDetailsImp;
+import com.example.backend.Service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -37,6 +39,7 @@ public class AuthController {
     private final EmailService emailService;
     private final SMSService smsService;
     private final UserDetailServiceImp userDetailServiceImp;
+    private final AuthService authService;
 
     @PostMapping("/otp/generate")
     public ResponseEntity<String> generateOTP(@RequestBody OTPRequest otpRequest){
@@ -57,7 +60,7 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authenticated);
 
         UserDetailsImp userDetails = (UserDetailsImp) authenticated.getPrincipal();
-        Artisan artisan = userDetails.getArtisan();
+        Artisan artisan = userDetails.artisan();
         if (artisan.getUserName()==null){
             ResponseCookie cookie = jwtUtils.generateJwtCookie(userDetails);
             String tempToken = cookie.getValue();
@@ -69,14 +72,15 @@ public class AuthController {
         }
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
         String jwtToken = jwtCookie.getValue();
+        ArtisanDTO artisanDTO = authService.getArtisanDetail(userDetails.getUsername(),jwtToken);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString()).
-                body(new JWTResponse(userDetails.getUsername(),jwtToken));
+                body(artisanDTO);
     }
 
     @PutMapping("/profile/username")
     public ResponseEntity<?> setUserName(@RequestBody UserNameRequest userNameRequest,Authentication authentication){
         UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
-        Artisan artisan = userDetails.getArtisan();
+        Artisan artisan = userDetails.artisan();
 
         if (artisan.getUserName()!=null){
             return ResponseEntity.badRequest().body(Map.of("error","Username already set"));
@@ -101,7 +105,7 @@ public class AuthController {
     @GetMapping("/profile/info")
     public ResponseEntity<?> getUserInfo(Authentication authentication){
         UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
-        Artisan artisan = userDetails.getArtisan();
+        Artisan artisan = userDetails.artisan();
         UserInfoResponse response = new UserInfoResponse(artisan.getUserName(),artisan.getEmail(),artisan.getPhoneNo());
         return ResponseEntity.ok().body(response);
     }

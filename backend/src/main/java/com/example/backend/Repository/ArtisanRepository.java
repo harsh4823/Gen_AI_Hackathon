@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ArtisanRepository extends JpaRepository<Artisan,Long> {
     Optional<Artisan> findByEmail(String email);
     Optional<Artisan> findByPhoneNo(String phoneNo);
+    Optional<Artisan> findByUserName(String username);
+
 }

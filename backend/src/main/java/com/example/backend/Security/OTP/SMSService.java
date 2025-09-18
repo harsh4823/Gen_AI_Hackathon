@@ -22,7 +22,7 @@ public class SMSService {
 
     public void sendSMS(String phoneNumber,String otp){
         try {
-        Message message = Message.creator(new PhoneNumber(phoneNumber),
+        Message message = Message.creator(new PhoneNumber("+91"+phoneNumber),
                         new PhoneNumber("+12186307315"),
                         "Your OTP is "+otp)
                 .create();

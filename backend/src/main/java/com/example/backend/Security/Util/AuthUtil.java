@@ -28,7 +28,7 @@ public class AuthUtil {
         Object principal = getAuthentication().getPrincipal();
 
         if (principal instanceof UserDetailsImp){
-            return ((UserDetailsImp) principal).getArtisan();
+            return ((UserDetailsImp) principal).artisan();
         }
         throw new IllegalStateException("Invalid principal");
     }

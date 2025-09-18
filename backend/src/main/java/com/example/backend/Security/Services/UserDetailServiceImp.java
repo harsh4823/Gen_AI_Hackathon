@@ -45,7 +45,7 @@ public class UserDetailServiceImp implements UserDetailsService {
 
     public UserInfoResponse updateProfile(UserInfoResponse request, Authentication authentication) {
         com.example.backend.Security.Services.UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
-        Artisan artisan = userDetails.getArtisan();
+        Artisan artisan = userDetails.artisan();
         artisan.setUserName(request.getUsername());
         artisan.setEmail(request.getEmail());
         artisan.setPhoneNo(request.getPhoneNumber());
@@ -54,7 +54,7 @@ public class UserDetailServiceImp implements UserDetailsService {
     }
 
     public UserInfoResponse deleteArtisan(UserDetailsImp userDetails) {
-        Artisan artisan = userDetails.getArtisan();
+        Artisan artisan = userDetails.artisan();
         artisanRepository.delete(artisan);
         return new UserInfoResponse(artisan.getUserName(),artisan.getEmail(),artisan.getPhoneNo());
     }
