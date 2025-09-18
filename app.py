@@ -177,7 +177,7 @@ def main(image_path: str, audio_path: str):
     return json.loads(final_listing[7:-3].replace('\n', ' '))
 
 
-main(image_path="gold_kettle.jpg", audio_path="audio.mp3")
+# main(image_path="gold_kettle.jpg", audio_path="audio.mp3")
 
 # FastAPI app
 app = FastAPI(title="AI Artisan Assistant API")
@@ -203,7 +203,7 @@ async def create_listing_endpoint(image: UploadFile = File(...), audio: UploadFi
         # Run the main processing logic
         final_listing = main(image_path, audio_path)
         
-        return {"product_listing": final_listing}
+        return final_listing
 
     except Exception as e:
         # If any error occurs, return an HTTP 500 error
@@ -215,4 +215,4 @@ async def create_listing_endpoint(image: UploadFile = File(...), audio: UploadFi
 # --- 5. RUN THE SERVER (for direct execution) ---
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app)
