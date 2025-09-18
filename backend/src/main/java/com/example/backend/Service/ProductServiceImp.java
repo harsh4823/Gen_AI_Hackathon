@@ -30,6 +30,7 @@ public class ProductServiceImp implements ProductService{
     private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
     private final AuthUtil authUtil;
+    private final AIService aiService;
 
     @Value("${project.image}")
     private String imagePath;
@@ -37,8 +38,22 @@ public class ProductServiceImp implements ProductService{
     @Value("${project.audio}")
     private String audioPath;
 
+    @Value("${image.base.url}")
+    private String url;
+
+    @Value("${audio.base.url}")
+    private String audioUrl;
+
+    private String constructImageUrl(String imageName){
+        return url.endsWith("/") ? url+imageName: url+"/"+imageName;
+    }
+
+    private String constructAudioUrl(String audioName){
+        return audioUrl.endsWith("/") ? audioUrl+audioName: audioUrl+"/"+audioName;
+    }
+
     @Override
-    public ProductDraftResponse createProduct( MultipartFile[] images) throws IOException {
+    public AIResponse createProduct(MultipartFile[] images, MultipartFile audio) throws IOException {
 
         ProductCreatePayload productCreatePayload = null;
 
@@ -46,19 +61,23 @@ public class ProductServiceImp implements ProductService{
                 Arrays.stream(images)
                         .map(img-> {
                             try {
-                                return uploadFile(imagePath,img);
+                                return constructImageUrl(uploadFile(imagePath,img));
                             } catch (IOException e) {
                                 throw new RuntimeException("Image Upload Failed : " + img.getOriginalFilename());
                             }
                         })
                         .toList();
+        String audioUrl = constructAudioUrl(uploadFile(audioPath,audio));
+        System.out.println(imageUrls.getFirst());
+        System.out.println(audioUrl);
         Product product = new Product();
         product.setImages(imageUrls);
         product.setArtisan(authUtil.getArtisan());
+        AIResponse aiResponse = aiService.getResult(images[0],audio);
         productRepository.save(product);
 
         // ai service will fetch suggestedProductName, suggestedPrice, and suggested Category
-        return  modelMapper.map(product, ProductDraftResponse.class);
+        return  aiResponse;
     }
 
     @Override
@@ -135,13 +154,13 @@ public class ProductServiceImp implements ProductService{
         String randomId = UUID.randomUUID().toString();
         String fileName = randomId.concat(originalFileName.substring(originalFileName.lastIndexOf('.')));
 
-        File folder = new File(imagePath);
+        File folder = new File(path);
 
         if(!folder.exists()){
             folder.mkdirs();
         }
 
-        Path filePath = Path.of(imagePath, fileName);
+        Path filePath = Path.of(path, fileName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         return fileName;
     }

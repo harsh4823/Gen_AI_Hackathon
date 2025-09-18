@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/auth/otp/**").permitAll() // Permit OTP endpoints
+                        .requestMatchers("/files/**", "/images/**", "/audio/**").permitAll() // Permit OTP endpoints
                                 .anyRequest().authenticated()
                 );
 

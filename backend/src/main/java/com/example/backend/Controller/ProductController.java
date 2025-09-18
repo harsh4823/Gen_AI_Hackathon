@@ -1,9 +1,6 @@
 package com.example.backend.Controller;
 
-import com.example.backend.Payload.ProductDTO;
-import com.example.backend.Payload.ProductDetailResponse;
-import com.example.backend.Payload.ProductDraftResponse;
-import com.example.backend.Payload.TemplateResponse;
+import com.example.backend.Payload.*;
 import com.example.backend.Service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,10 +23,11 @@ public class ProductController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductDraftResponse> createProduct(
-            @RequestPart(value = "images") MultipartFile[] images
+    public ResponseEntity<?> createProduct(
+            @RequestPart(value = "images") MultipartFile[] images,
+            @RequestPart(value = "audio") MultipartFile audio
     ) throws IOException {
-        ProductDraftResponse res = productService.createProduct(images);
+       AIResponse res = productService.createProduct(images,audio);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
