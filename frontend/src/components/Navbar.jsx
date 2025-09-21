@@ -36,7 +36,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to={"/"} className="flex items-center text-2xl font-bold z-50">
             <GiLindenLeaf className="mr-2 text-3xl" />
-            <span>AI-Artisan</span>
+            <span>KalaKriti AI</span>
           </Link>
 
           {/* Links */}
