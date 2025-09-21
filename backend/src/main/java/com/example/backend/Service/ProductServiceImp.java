@@ -74,7 +74,9 @@ public class ProductServiceImp implements ProductService{
         product.setImages(imageUrls);
         product.setArtisan(authUtil.getArtisan());
         AIResponse aiResponse = aiService.getResult(images[0],audio);
-        productRepository.save(product);
+        Product saved = productRepository.save(product);
+        aiResponse.setProductId(saved.getProductId());
+        aiResponse.setImages(imageUrls);
 
         // ai service will fetch suggestedProductName, suggestedPrice, and suggested Category
         return  aiResponse;
@@ -96,11 +98,11 @@ public class ProductServiceImp implements ProductService{
         Product product = productRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("Product not found"));
         product.setProductName(productDTO.getProductName());
-        product.setDescription(product.getDescription());
+        product.setDescription(productDTO.getDescription());
         product.setImages(productDTO.getImages());
-        product.setPrice(productDTO.getPrice());
+        product.setCareInstructions(productDTO.getCareInstructions());
         product.setMaterial(productDTO.getMaterial());
-        product.setTags(productDTO.getTags());
+        product.setKeyFeatures(productDTO.getKeyFeatures());
         product.setProductStatus(ProductStatus.PUBLISHED);
         productRepository.save(product);
 

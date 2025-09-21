@@ -29,14 +29,24 @@ public class Product {
     @Column(name = "image_url")
     private List<String> images;
 
-    private Double price;
-    private String currency="INR";
-    private String material;
+//    private Double price;
+//    private String currency="INR";
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "product_materials", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "material")
+    private List<String> material;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "product_tags", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "tag")
-    private List<String> tags;
+    @CollectionTable(name = "product_features", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "keyFeatures")
+    private List<String> keyFeatures;
+
+    private String careInstructions;
+
+//    @ElementCollection(fetch = FetchType.EAGER)
+//    @CollectionTable(name = "product_tags", joinColumns = @JoinColumn(name = "product_id"))
+//    @Column(name = "tag")
+//    private List<String> tags;
 
     @Enumerated(EnumType.STRING)
     private ProductStatus productStatus = ProductStatus.DRAFT;

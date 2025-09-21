@@ -7,13 +7,18 @@ import java.util.List;
 
 @Data
 public class ProductDTO {
-    private String productId;
+
+    private Long productId;
     private String productName;
     private String description;
     private List<String> images;
-    private Double price;
-    private String currency;
-    private String material;
-    private List<String> tags;
+    private List<String> material;
+
+    // The JSON key is "keyFeatures", which matches this field name. Remove the annotation.
+    private List<String> keyFeatures;
+
+    // The JSON key is "careInstructions", which matches this field name. Remove the annotation.
+    private String careInstructions;
+
     private ProductStatus status;
 }

@@ -3,12 +3,12 @@ import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import OTP from "./pages/OTP";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import SellProduct from "./pages/SellProduct";
 import  React  from 'react';
 import { Toaster } from "react-hot-toast";
+import ProductDashboard from "./components/ProductDashboard";
 
 function App() {
   return (
@@ -19,9 +19,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/otp" element={<OTP />} />
         <Route path="/" element={<Home />} />
         <Route path="/sellproduct" element={<SellProduct />} />
+        <Route element={<ProductDashboard />} path="/products"/>
         <Route
           path="/dashboard"
           element={

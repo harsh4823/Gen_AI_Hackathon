@@ -91,7 +91,7 @@ public class AuthController {
         ResponseCookie finalCookie = jwtUtils.generateJwtCookie(updatedUserDetails);
         String finalJWT = finalCookie.getValue();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,finalCookie.toString()).
-                body(new JWTResponse(updatedUserDetails.getUsername(),finalJWT));
+                body(new JWTResponse(artisan.getUserName(),finalJWT));
     }
 
     @PostMapping("/logout")

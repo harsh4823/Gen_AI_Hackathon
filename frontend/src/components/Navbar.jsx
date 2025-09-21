@@ -153,21 +153,8 @@ const Navbar = () => {
             </li>
 
             {/* Auth */}
-            {!user ? (
+            {!user?.username ? (
               <>
-                <li>
-                  <Link
-                    to={"/register"}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center mt-2 px-4 py-1 space-x-2
-                      font-semibold rounded-full border-[var(--artisan-dark)] border-2
-                      hover:text-white hover:bg-[var(--artisan-dark)]
-                      transition duration-300"
-                  >
-                    <FaSignInAlt />
-                    <span>Register</span>
-                  </Link>
-                </li>
                 <li>
                   <Link
                     to={"/login"}

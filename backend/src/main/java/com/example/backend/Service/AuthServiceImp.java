@@ -5,6 +5,7 @@ import com.example.backend.Payload.ArtisanDTO;
 import com.example.backend.Repository.ArtisanRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,7 +18,8 @@ public class AuthServiceImp implements AuthService{
     @Override
     public ArtisanDTO getArtisanDetail(String username, String jwtToken) {
         Artisan artisan = artisanRepository.findByPhoneNo(username)
-                .orElseThrow(()->new RuntimeException("Artisan not found with username : "+username));
+                .orElse(artisanRepository.findByEmail(username)
+                        .orElseThrow(()->new UsernameNotFoundException("User not found")));
         ArtisanDTO artisanDTO = modelMapper.map(artisan, ArtisanDTO.class);
         artisanDTO.setJwtToken(jwtToken);
         return artisanDTO;

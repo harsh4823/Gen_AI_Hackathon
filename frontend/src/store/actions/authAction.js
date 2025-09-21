@@ -30,12 +30,50 @@ export const otpVerify = (otp, toast, navigate) => async (dispatch) => {
             }
         );
         localStorage.setItem("auth", JSON.stringify(data));
-        toast.success("Login Successfully");
-        navigate("/");
+        if (data && data.user && data.user.username) {
+            // --- EXISTING USER ---
+            // The user profile is complete, proceed to login.
+            dispatch({
+                type: "Login_User",
+                payload: data,
+            });
+            toast.success("Login Successfully");
+            navigate("/"); // Navigate to the main app
+
+        } else {
+            // --- NEW USER ---
+            // The user needs to complete their profile (e.g., add a username).
+            // The backend returns a message and a temporary token.
+            toast.success(data.message || "OTP Verified! Please complete your profile.");
+            navigate("/register"); // Navigate to the profile setup/register page
+        }
+
     } catch (error) {
         console.log(error);
         toast.error(error?.response?.data?.message || "Internal Server Error");
         
+    }
+}
+
+export const setUsername = (name, toast, navigate) => async (dispatch) => {
+    try {
+        const sendData = {
+            "username" : name,
+        }
+        const { data } = await api.put(`/auth/profile/username`, sendData);
+        dispatch(
+            {
+                type: "Login_User",
+                payload: data,
+            }
+        );
+        localStorage.setItem("auth", JSON.stringify(data));
+        toast.success("Login Successfully");
+        navigate("/"); // Navigate to the main app
+
+    } catch (error) {
+        console.log(error);
+        toast.error(error?.response?.data?.message || "Internal Server Error");
     }
 }
 

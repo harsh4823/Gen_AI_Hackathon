@@ -137,9 +137,9 @@ synthesis_prompt = ChatPromptTemplate.from_template(
     {{
         "title": "attractive product title",
         "description": "detailed marketing description (2-3 sentences)",
-        "key_features": ["feature1", "feature2", "feature3"],
+        "keyFeatures": ["feature1", "feature2", "feature3"],
         "materials": ["material1", "material2"],
-        "care_instructions": "brief care instructions"
+        "careInstructions": "brief care instructions"
     }}
 
     Return ONLY the JSON object, no additional text:"""

@@ -43,6 +43,9 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> saveProduct(@RequestBody ProductDTO productDTO,@PathVariable Long id){
+        // ✅ --- ADD THIS DEBUGGING LINE ---
+        System.out.println("DTO Received in Controller: " + productDTO.toString());
+        // ------------------------------------
         ProductDTO savedProductDTO = productService.saveProduct(productDTO,id);
         return new ResponseEntity<>(savedProductDTO,HttpStatus.OK);
     }
